@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "pose-estimation"
+version = "0.1.0"
+description = ""
+authors = ["thajime0125 <thajime0125@gmail.com>"]
+readme = "README.md"
+packages = [{include = "pose_estimation"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+mediapipe = "^0.10.0"
+pandas = "^2.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
