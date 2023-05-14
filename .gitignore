@@ -1,5 +1,7 @@
 # My Project's .gitignore
 *.task
+*.mp4
+*.MOV
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
