@@ -10,6 +10,7 @@ packages = [{include = "pose_estimation"}]
 python = "^3.8"
 mediapipe = "^0.10.0"
 pandas = "^2.0.1"
+jupyter = "^1.0.0"
 
 
 [build-system]
