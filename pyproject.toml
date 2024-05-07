@@ -11,6 +11,9 @@ python = "^3.8"
 mediapipe = "^0.10.0"
 pandas = "^2.0.1"
 jupyter = "^1.0.0"
+ultralytics = "^8.0.126"
+pytesseract = "^0.3.10"
+moviepy = "^1.0.3"
 
 
 [build-system]
