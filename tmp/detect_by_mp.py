@@ -33,7 +33,7 @@ def draw_landmarks_on_image(cv2_image, detection_result):
   return annotated_image
 
 
-def detect_landmarks(cv2_image, frame_timestamp_ms):
+def detect_landmarks(cv2_image, frame_timestamp_ms, landmarker):
    # Convert the frame to RGB using OpenCV’s cvtColor() function.
     frame = cv2.cvtColor(cv2_image, cv2.COLOR_BGR2RGB)
 
@@ -46,39 +46,44 @@ def detect_landmarks(cv2_image, frame_timestamp_ms):
     return pose_landmarker_result
 
 
+def get_landmarks(cv2_image):
 
-BaseOptions = mp.tasks.BaseOptions
-PoseLandmarker = mp.tasks.vision.PoseLandmarker
-PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
-VisionRunningMode = mp.tasks.vision.RunningMode
+  BaseOptions = mp.tasks.BaseOptions
+  PoseLandmarker = mp.tasks.vision.PoseLandmarker
+  PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
+  VisionRunningMode = mp.tasks.vision.RunningMode
 
-# Create a pose landmarker instance with the video mode:
-options = PoseLandmarkerOptions(
-    base_options=BaseOptions(model_asset_path=MODEL_PATH),
-    running_mode=VisionRunningMode.VIDEO,
-)
+  # Create a pose landmarker instance with the video mode:
+  options = PoseLandmarkerOptions(
+      base_options=BaseOptions(model_asset_path=MODEL_PATH),
+      running_mode=VisionRunningMode.VIDEO,
+  )
 
-with PoseLandmarker.create_from_options(options) as landmarker:
-    video = cv2.VideoCapture(VIDEO_PATH)
-    fps = video.get(cv2.CAP_PROP_FPS)
+  with PoseLandmarker.create_from_options(options) as landmarker:
+      video = cv2.VideoCapture(VIDEO_PATH)
+      fps = video.get(cv2.CAP_PROP_FPS)
 
-    while video.isOpened():
-        ret, frame = video.read()
-        if not ret:
-            break
+      while video.isOpened():
+          ret, frame = video.read()
+          if not ret:
+              break
 
-        timestamp = video.get(cv2.CAP_PROP_POS_MSEC)
-        frame_timestamp_ms = int(timestamp)
+          timestamp = video.get(cv2.CAP_PROP_POS_MSEC)
+          frame_timestamp_ms = int(timestamp)
 
-        # Process the frame using the pose landmarker.
-        pose_landmarker_result = detect_landmarks(frame, frame_timestamp_ms)
+          # Process the frame using the pose landmarker.
+          pose_landmarker_result = detect_landmarks(frame, frame_timestamp_ms, landmarker)
 
-        # Print the landmarks detected in the frame.
-        if pose_landmarker_result.pose_landmarks:
-            pprint(pose_landmarker_result.pose_landmarks[0][32].visibility)
+          # Print the landmarks detected in the frame.
+          if pose_landmarker_result.pose_landmarks:
+              pprint(pose_landmarker_result)
+              # pprint(pose_landmarker_result.pose_landmarks[0][32].visibility)
+              break
 
-        annotated_image = draw_landmarks_on_image(frame, pose_landmarker_result)
-        cv2.imshow('Mediapipe', cv2.cvtColor(annotated_image, cv2.COLOR_RGB2BGR))
-        if cv2.waitKey(5) & 0xFF == 27:
-            break
-    
+          annotated_image = draw_landmarks_on_image(frame, pose_landmarker_result)
+          cv2.imshow('Mediapipe', cv2.cvtColor(annotated_image, cv2.COLOR_RGB2BGR))
+          if cv2.waitKey(1) & 0xFF == 27:
+              break
+
+if __name__ == '__main__':
+  get_landmarks(cv2.imread('data/gopro-0507/GX010911.MP4'))

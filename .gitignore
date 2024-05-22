@@ -2,6 +2,8 @@
 *.task
 *.mp4
 *.MOV
+_data/
+csv_data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -7,12 +7,18 @@ readme = "README.md"
 packages = [{include = "pose_estimation"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.11"
 mediapipe = "^0.10.0"
 pandas = "^2.0.1"
 jupyter = "^1.0.0"
+pytesseract = "^0.3.10"
+plotly = "^5.22.0"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
