@@ -41,10 +41,11 @@ def get_video_info(file):
     return fps, frame_count, duration
 
 
-def parse_landmarks(landmarks, round, timestamp):
+def parse_landmarks(landmarks, round, timestamp, throw = 0):
     landmark_dict = {}
     landmark_dict['round'] = round
     landmark_dict['timestamp'] = timestamp
+    landmark_dict['throw'] = throw
     for i in range(33):
         landmark_dict[f'l{i}x'] = landmarks[0][i].x
         landmark_dict[f'l{i}y'] = landmarks[0][i].y
@@ -108,3 +109,43 @@ def video_to_parse_csv(video_path, model_path, csv_path):
         df = pd.DataFrame(landmark_dict_list)
         df.to_csv(csv_path, index=False)
 
+def get_landmarks_with_frame_count(video_path, model_path, start_frame, end_frame, round, throw) -> pd.DataFrame:
+    
+        BaseOptions = mp.tasks.BaseOptions
+        PoseLandmarker = mp.tasks.vision.PoseLandmarker
+        PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
+        VisionRunningMode = mp.tasks.vision.RunningMode
+    
+        # Create a pose landmarker instance with the video mode:
+        options = PoseLandmarkerOptions(
+            base_options=BaseOptions(model_asset_path=model_path),
+            running_mode=VisionRunningMode.VIDEO,
+        )
+    
+        landmark_dict_list = []
+    
+        with PoseLandmarker.create_from_options(options) as landmarker:
+            video = cv2.VideoCapture(video_path)
+    
+            while video.isOpened():
+                ret, frame = video.read()
+                if not ret:
+                    break
+    
+                timestamp = video.get(cv2.CAP_PROP_POS_MSEC)
+                frame_timestamp_ms = int(timestamp)
+                frame_count = int(video.get(cv2.CAP_PROP_POS_FRAMES))
+    
+                if frame_count < start_frame:
+                    continue
+                if frame_count > end_frame:
+                    break
+    
+                # Process the frame using the pose landmarker.
+                pose_landmarker_result = detect_landmarks(frame, frame_timestamp_ms, landmarker)
+                landmark_dict = parse_landmarks(pose_landmarker_result.pose_world_landmarks, round, frame_timestamp_ms, throw)
+                landmark_dict_list.append(landmark_dict)
+    
+            
+            df = pd.DataFrame(landmark_dict_list)
+            return df
